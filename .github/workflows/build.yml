@@ -24,6 +24,10 @@ jobs:
         if: always()
         run: |
           J=$(find ~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft -name 'minecraft-merged-1.21.11-loom*.jar' | grep -v intermediary | head -1)
-          echo "JAR=$J"
-          unzip -l "$J" | awk '{print $4}' | grep -E '/(Snowball|ItemUseAnimation|UseAnim|Identifier|ResourceLocation|InteractionResult|InteractionResultHolder|ThrowableItemProjectile|Item|Level|Projectile|ItemSupplier)\.class$'
-          for c in net.minecraft.world.item.Item net.minecraft.world.level.Level; do echo "== $c"; javap -cp "$J" -protected "$c" | grep -E "use\(|releaseUsing|getUseDuration|getUseAnimation|isClientSide|setId|Properties"; done
+          P=net.minecraft.world.entity.projectile
+          for c in $P.throwableitemprojectile.Snowball $P.throwableitemprojectile.ThrowableItemProjectile $P.Projectile net.minecraft.core.particles.DustParticleOptions net.minecraft.world.InteractionResult; do echo "== $c"; javap -cp "$J" -protected "$c"; done
+          echo "== Entity/LivingEntity"; javap -cp "$J" -protected net.minecraft.world.entity.Entity net.minecraft.world.entity.LivingEntity | grep -E "igniteForSeconds|setRemainingFireTicks|hurt|hurtServer|level\(|damageSources|addEffect|getX\(|isAlive|tickCount|getOwner"
+          echo "== Level/DamageSources"; javap -cp "$J" -protected net.minecraft.world.damagesource.DamageSources | grep -E "thrown"
+          javap -cp "$J" -protected net.minecraft.world.entity.player.Player | grep -E "getXRot|getYRot"
+          javap -cp "$J" -protected net.minecraft.world.item.Item\$Properties | grep -E "setId"
+          javap -cp "$J" -protected net.minecraft.resources.Identifier | grep -E "fromNamespaceAndPath"
