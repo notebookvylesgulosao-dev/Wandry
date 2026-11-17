@@ -1,0 +1,26 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:use_duration",
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "wandry:item/bone_wand"
+    },
+    "entries": [
+      {
+        "threshold": 8.0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "wandry:item/bone_wand_pull"
+        }
+      },
+      {
+        "threshold": 3.0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "wandry:item/bone_wand_thrust"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "wandry",
+  "version": "${version}",
+  "name": "Wandry - Three Wands",
+  "description": "Three animated wands with elemental spell effects.",
+  "authors": ["You"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.example.wandry.WandryMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
