@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public final class WandryMod implements ModInitializer {
     public static final String MOD_ID = "wandry";
@@ -27,7 +28,7 @@ public final class WandryMod implements ModInitializer {
     }
 
     private static Item register(String path, Item item) {
-        return Registry.register(Registries.ITEM,
+        return Registry.register(BuiltInRegistries.ITEM,
                 Identifier.fromNamespaceAndPath(MOD_ID, path), item);
     }
 
