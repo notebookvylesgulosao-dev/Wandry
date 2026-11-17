@@ -2,6 +2,8 @@ name: Build Wandry
 on:
   workflow_dispatch:
   push:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,3 +22,11 @@ jobs:
         with:
           name: wandry-jar
           path: build/libs/*.jar
+      - name: Publish release with jar
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          JAR=$(ls build/libs/wandry-*.jar | grep -v sources | head -1)
+          gh release delete v1.0.0 --yes --cleanup-tag || true
+          gh release create v1.0.0 "$JAR" --title "Wandry 1.0.0 (Fabric 1.21.11)" --notes "Compilado com sucesso via GitHub Actions. Nao testado dentro do Minecraft."
