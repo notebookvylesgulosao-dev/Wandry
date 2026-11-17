@@ -1,29 +1,28 @@
 package com.example.wandry;
 
-import org.joml.Vector3f;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 
 public final class SpellProjectile extends Snowball {
     private final WandItem.Spell spell;
 
     public SpellProjectile(Level level, Player owner, WandItem.Spell spell) {
-        super(level, owner);
-        this.spell = spell;
-        setItem(new ItemStack(switch (spell) {
+        super(level, owner, new ItemStack(switch (spell) {
             case MAGMA -> WandryMod.MAGMA_ORB;
             case BONE -> WandryMod.BONE_ORB;
             case CELESTIAL -> WandryMod.CELESTIAL_ORB;
         }));
+        this.spell = spell;
     }
 
     private int color() {
@@ -35,17 +34,13 @@ public final class SpellProjectile extends Snowball {
     }
 
     private DustParticleOptions dust(float scale) {
-        int rgb = color();
-        return new DustParticleOptions(new Vector3f(
-                ((rgb >> 16) & 255) / 255.0F,
-                ((rgb >> 8) & 255) / 255.0F,
-                (rgb & 255) / 255.0F), scale);
+        return new DustParticleOptions(color(), scale);
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide || !isAlive()) return;
+        if (!level().isClientSide() || !isAlive()) return;
 
         // Launch flare, then four independent drifting/rotating-looking shard trails.
         if (tickCount <= 2) {
@@ -74,7 +69,7 @@ public final class SpellProjectile extends Snowball {
     }
 
     private void impactBurst() {
-        if (!level().isClientSide) return;
+        if (!level().isClientSide()) return;
         for (int i = 0; i < 18; i++) {
             double a = Math.PI * 2.0 * i / 18.0;
             double y = ((i % 3) - 1) * 0.045;
@@ -88,12 +83,12 @@ public final class SpellProjectile extends Snowball {
         impactBurst();
         super.onHitEntity(hit);
         Entity entity = hit.getEntity();
-        if (!(entity instanceof LivingEntity target) || level().isClientSide) return;
+        if (!(entity instanceof LivingEntity target) || !(level() instanceof ServerLevel serverLevel)) return;
 
         // Exactly 1.0 damage point (half a heart), shared by all three wands.
-        target.hurt(damageSources().thrown(this, getOwner()), 1.0F);
+        target.hurtServer(serverLevel, damageSources().thrown(this, getOwner()), 1.0F);
         switch (spell) {
-            case MAGMA -> target.setSecondsOnFire(3);
+            case MAGMA -> target.igniteForSeconds(3.0F);
             case BONE -> target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20, 0));
             case CELESTIAL -> target.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0));
         }

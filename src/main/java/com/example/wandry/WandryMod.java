@@ -3,7 +3,7 @@ package com.example.wandry;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.Registry;
 
@@ -22,13 +22,13 @@ public final class WandryMod implements ModInitializer {
     public static final Item CELESTIAL_ORB = register("celestial_orb", new Item(properties("celestial_orb")));
 
     private static Item.Properties properties(String path) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+        Identifier id = Identifier.fromNamespaceAndPath(MOD_ID, path);
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id));
     }
 
     private static Item register(String path, Item item) {
         return Registry.register(Registries.ITEM,
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, path), item);
+                Identifier.fromNamespaceAndPath(MOD_ID, path), item);
     }
 
     @Override
