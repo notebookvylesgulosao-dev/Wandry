@@ -41,7 +41,7 @@ public final class SpellProjectile extends Snowball {
     public void tick() {
         super.tick();
         if (spell == WandItem.Spell.BONE && isAlive() && level() instanceof ServerLevel serverLevel) {
-            BoneEffects.trail(serverLevel, this);
+            BoneEffects.trail(serverLevel, this, tickCount);
         }
         if (!level().isClientSide() || !isAlive()) return;
 

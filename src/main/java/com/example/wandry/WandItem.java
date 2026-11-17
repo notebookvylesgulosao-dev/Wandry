@@ -28,12 +28,20 @@ public final class WandItem extends Item {
 
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity user) {
-        return 12;
+        // Bone Wand can be held (charged) for as long as the player likes; the others keep 12 ticks.
+        return spell == Spell.BONE ? 72000 : 12;
     }
 
     @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
         return ItemUseAnimation.SPEAR;
+    }
+
+    @Override
+    public void onUseTick(Level level, LivingEntity user, ItemStack stack, int remainingUseDuration) {
+        if (spell == Spell.BONE && user instanceof Player player && level instanceof ServerLevel serverLevel) {
+            BoneEffects.charge(serverLevel, player, getUseDuration(stack, user) - remainingUseDuration);
+        }
     }
 
     @Override
@@ -45,7 +53,7 @@ public final class WandItem extends Item {
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.65F, 0.35F);
         level.addFreshEntity(projectile);
         if (spell == Spell.BONE && level instanceof ServerLevel serverLevel) {
-            BoneEffects.launch(serverLevel, player);
+            BoneEffects.launch(serverLevel, player, usedTicks);
         }
         return true;
     }
