@@ -20,3 +20,11 @@ jobs:
         with:
           name: wandry-jar
           path: build/libs/*.jar
+      - name: Inspect mapped Minecraft API
+        if: always()
+        run: |
+          J=$(find ~/.gradle/caches/fabric-loom -name 'minecraft-merged*.jar' -o -name 'minecraft-*-mapped*.jar' 2>/dev/null | head -1)
+          echo "JAR=$J"; find ~/.gradle/caches/fabric-loom -name '*.jar' | head -20
+          [ -n "$J" ] || exit 0
+          unzip -l "$J" | awk '{print $4}' | grep -E '/(Snowball|ItemUseAnimation|UseAnim|Identifier|ResourceLocation|InteractionResult|ThrowableItemProjectile|Item)\.class$'
+          for c in net.minecraft.world.item.Item net.minecraft.world.level.Level; do echo "== $c"; javap -cp "$J" -protected "$c" | grep -E "use\(|releaseUsing|getUseDuration|getUseAnimation|isClientSide|setId|Properties"; done
