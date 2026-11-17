@@ -1,5 +1,6 @@
 package com.example.wandry;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,6 +44,9 @@ public final class WandItem extends Item {
         SpellProjectile projectile = new SpellProjectile(level, player, spell);
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.65F, 0.35F);
         level.addFreshEntity(projectile);
+        if (spell == Spell.BONE && level instanceof ServerLevel serverLevel) {
+            BoneEffects.launch(serverLevel, player);
+        }
         return true;
     }
 }

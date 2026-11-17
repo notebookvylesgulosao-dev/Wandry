@@ -40,6 +40,9 @@ public final class SpellProjectile extends Snowball {
     @Override
     public void tick() {
         super.tick();
+        if (spell == WandItem.Spell.BONE && isAlive() && level() instanceof ServerLevel serverLevel) {
+            BoneEffects.trail(serverLevel, this);
+        }
         if (!level().isClientSide() || !isAlive()) return;
 
         // Launch flare, then four independent drifting/rotating-looking shard trails.
@@ -68,6 +71,12 @@ public final class SpellProjectile extends Snowball {
         }
     }
 
+    private void boneImpact() {
+        if (spell == WandItem.Spell.BONE && level() instanceof ServerLevel serverLevel) {
+            BoneEffects.impact(serverLevel, getX(), getY(), getZ());
+        }
+    }
+
     private void impactBurst() {
         if (!level().isClientSide()) return;
         for (int i = 0; i < 18; i++) {
@@ -81,6 +90,7 @@ public final class SpellProjectile extends Snowball {
     @Override
     protected void onHitEntity(EntityHitResult hit) {
         impactBurst();
+        boneImpact();
         super.onHitEntity(hit);
         Entity entity = hit.getEntity();
         if (!(entity instanceof LivingEntity target) || !(level() instanceof ServerLevel serverLevel)) return;
@@ -97,6 +107,7 @@ public final class SpellProjectile extends Snowball {
     @Override
     protected void onHitBlock(BlockHitResult hit) {
         impactBurst();
+        boneImpact();
         super.onHitBlock(hit);
     }
 }
